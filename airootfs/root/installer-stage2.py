@@ -8,6 +8,7 @@ import shutil
 import platform
 import tempfile
 
+
 # executes the given command, but does not display output.
 def run(command: str, rshell: bool=False):
 	proc=subprocess.run(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=rshell)
@@ -35,10 +36,11 @@ def execute(command: str, rshell: bool=False)->tuple:
 		return (proc.stdout.decode(), proc.stderr.decode())
 
 print ("Installing modules that you may find useful")
-run("pip install console-menu click wifi")
+run("pip install console-menu click wifi netifaces")
 from consolemenu import *
 from consolemenu.items import *
 import click
+import netifaces
 de_packages=[]
 dm=-1
 if click.confirm("Would you like to install a desktop environment?"):
@@ -100,10 +102,12 @@ while True:
 	if click.confirm("Would you like to change them?"):
 		tzs=execute("timedatectl list-timezones")[0].split()
 		fd, fname=tempfile.mkstemp(text=True)
-		with os.fdopen(fd) as f:
+		with os.fdopen(fd, "w") as f:
 			f.write("The following timezones are available:\n")
 			for count, tz in enumerate(tzs):
 				f.write(f"{count}: {tz}\n")
+   f.flush()
+      os.fsync(f.fileno())
 		os.close(fd)
 		subprocess.run(f"less -- {fname}")
 		while True:
@@ -160,12 +164,16 @@ run("grub-mkconfig -o /boot/grub/grub.cfg")
 print ("Creating administrative user accounts")
 users=[]
 while True:
-	username=input("Username: ")
-	run(f"useradd -m -g users -G power,storage,wheel -s /bin/bash {username}")
-	subprocess.call(["passwd", username])
-	users.append(username)
-	if not click.confirm("Add another?"):
-		break
+	username=click.prompt("Username")
+	proc=subprocess.run(f"useradd -m -g users -G power,storage,wheel -s /bin/bash {username}")
+	if proc.returncode!=0:
+		print ("Error: invalid username specification; user was not added to system. Please try again.")
+		continue
+	else:
+		subprocess.call(["passwd", username])
+		users.append(username)
+		if not click.confirm("Add another?"):
+			break
 
 if click.confirm("Modify sudoers file for administrator accounts?"):
 	print ("Opening sudoers file in Nano. When done, press ctrl+x.")
@@ -174,7 +182,7 @@ if click.confirm("Modify sudoers file for administrator accounts?"):
 	subprocess.run(["visudo"])
 if len(de_packages)>0:
 	if click.confirm("Would you like to boot into a display manager/desktop environment? Do not say yes if you wish to use Kodi standalone."):
-		menu=SelectionMenu(["GDM", "LightDM", "LXDM", "SDDM", "XDM", "Kodi"], title="Select a display manager to install")
+		menu=SelectionMenu(["GDM", "LightDM", "LXDM", "SDDM", "XDM"], title="Select a display manager to install")
 		menu.show(False)
 		dm=menu.selected_item.index
 		if menu.selected_item.index==0:
@@ -192,6 +200,7 @@ if len(de_packages)>0:
 		elif menu.selected_item.index==4:
 			run("pacman -Syu xorg-xdm --noconfirm")
 			run("systemctl enable xdm")
+
 if click.confirm("Would you like to enable orca accessibility?"):
 	print ("Enabling Mate accessibility for all non-root users")
 	run("pacman -Syu orca --noconfirm")
@@ -258,4 +267,14 @@ else:
 # Make sure the system is audible when it boots.
 run("amixer sset Master 100%")
 run("alsactl store")
+
+# as dhcpcd has become more prevalent, automatically enable it for all network interfaces
+print ("Configuring network interfaces")
+if subprocess.run("pacman -Qsq dhcpcd", stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode!=0:
+	run ("pacman -Syu dhcpcd --noconfirm")
+for interface in netifaces.interfaces():
+	if interface.lower()=="lo":
+		continue
+	run(f"systemctl enable dhcpcd@{interface}")
+
 print ("Main installation complete!")
