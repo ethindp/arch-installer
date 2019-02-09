@@ -80,21 +80,8 @@ if click.confirm("Would you like to install a desktop environment?"):
 		de_packages.extend(["xfce4", "xfce4-goodies"])
 	de_packages.extend(["xorg", "xorg-apps", "xorg-drivers", "xorg-fonts"])
 	de_packages.sort()
-	while True:
-		print ("The following packages and/or groups will be installed:")
-	for pkg in de_packages:
-		print (pkg)
-		if click.confirm("Edit this list of packages and/or groups?"):
-			print ("Opening nano to edit package list; when done, save with ctrl+x.")
-			res = click.edit("\n".join(de_packages), editor="nano")
-			if res is None:
-				print ("No edits made; continuing.")
-				break
-		else:
-			de_packages=res.split()
-	else:
-		print ("Installing requested packages/groups")
-		run(f"""pacman -Syu {" ".join(de_packages)} --noconfirm""")
+	print ("Installing selected environment")
+	run(f"""pacman -Syu {" ".join(de_packages)} --noconfirm""")
 
 if click.confirm("Would you like to add any other packages to the system?"):
 	print("Enter all packages separated by a space.")
