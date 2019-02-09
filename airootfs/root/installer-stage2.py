@@ -100,10 +100,12 @@ while True:
 	if click.confirm("Would you like to change them?"):
 		tzs=execute("timedatectl list-timezones")[0].split()
 		fd, fname=tempfile.mkstemp(text=True)
-		with os.fdopen(fd) as f:
+		with os.fdopen(fd, "w") as f:
 			f.write("The following timezones are available:\n")
 			for count, tz in enumerate(tzs):
 				f.write(f"{count}: {tz}\n")
+			f.flush()
+			os.fsync(f.fileno())
 		os.close(fd)
 		subprocess.run(f"less -- {fname}")
 		while True:
@@ -123,11 +125,11 @@ with open("/etc/locale.conf", "w") as f:
 	f.write("LANG=en_US.UTF-8")
 
 if click.confirm("Would you like to set a system hostname?"):
-	hostname=input("Enter your hostname: ")
+	hostname=click.prompt("Enter system hostname")
 	with open("/etc/hostname", "w") as f:
 		f.write(hostname)
 
-print ("Please specify the root password when prompted:")
+print ("Please specify the root password when prompted.")
 subprocess.run("passwd")
 if click.confirm("Would you like to enable microcode updates for this system?"):
 	if platform.processor().lower().find("intel"):
