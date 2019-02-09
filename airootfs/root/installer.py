@@ -36,8 +36,16 @@ def execute(command: str, rshell: bool=False)->tuple:
 	else:
 		return (proc.stdout.decode(), proc.stderr.decode())
 
+def get_firmware():
+	if os.path.exists("/sys/firmware/efi") or os.path.exists("/sys/firmware/efi/efivars") or os.path.exists("/sys/firmware/efi/vars"):
+		return  1
+	else:
+		return 0
+
 os.remove("/etc/resolv.conf")
 shutil.copy2("/etc/resolv.conf.new", "/etc/resolv.conf")
+# First let's make sure we can be heard.
+run("amixer sset Master 100%")
 # Step 1 - determine that we are connected to the internet
 try:
 	socket.gethostbyname("google.com")
@@ -68,7 +76,7 @@ menu.show(False)
 
 disk=diskjson["blockdevices"][menu.selected_item.index]["path"]
 
-if os.path.exists("/sys/firmware/efi") or os.path.exists("/sys/firmware/efi/efivars") or os.path.exists("/sys/firmware/efi/vars"):
+if (get_firmware()):
 	print ("Creating UEFI partition table")
 	run(f"parted -s {disk} -- mklabel gpt")
 	run(f"parted -s {disk} -- mkpart primary fat32 0% 1g")
@@ -82,7 +90,7 @@ else:
 	run(f"parted -s {disk} -- set 1 boot on")
 
 print ("Creating file systems")
-if os.path.exists("/sys/firmware/efi") or os.path.exists("/sys/firmware/efi/efivars") or os.path.exists("/sys/firmware/efi/vars"):
+if (get_firmware()):
 	run(f"mkfs.fat -F32 {disk}1")
 	run(f"mkfs.ext4 {disk}2")
 else:
@@ -95,7 +103,7 @@ os.mkdir("/mnt/boot", mode=755)
 run("mount /dev/sda1 /mnt/boot")
 
 print ("Installing the base system")
-if os.path.exists("/sys/firmware/efi") or os.path.exists("/sys/firmware/efi/efivars") or os.path.exists("/sys/firmware/efi/vars"):
+if (get_firmware()):
 	run("pacstrap /mnt base base-devel alsa-utils grub efibootmgr python python-pip wireless_tools wpa_supplicant dialog wpa_actiond")
 else:
 	run("pacstrap /mnt base base-devel alsa-utils grub python python-pip wpa_supplicant wpa_actiond dialog wireless_tools")

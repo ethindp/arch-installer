@@ -100,12 +100,10 @@ while True:
 	if click.confirm("Would you like to change them?"):
 		tzs=execute("timedatectl list-timezones")[0].split()
 		fd, fname=tempfile.mkstemp(text=True)
-		with os.fdopen(fd, "w") as f:
+		with os.fdopen(fd) as f:
 			f.write("The following timezones are available:\n")
 			for count, tz in enumerate(tzs):
 				f.write(f"{count}: {tz}\n")
-			f.flush()
-			os.fsync(f.fileno())
 		os.close(fd)
 		subprocess.run(f"less -- {fname}")
 		while True:
@@ -125,11 +123,11 @@ with open("/etc/locale.conf", "w") as f:
 	f.write("LANG=en_US.UTF-8")
 
 if click.confirm("Would you like to set a system hostname?"):
-	hostname=click.prompt("Enter system hostname")
+	hostname=input("Enter your hostname: ")
 	with open("/etc/hostname", "w") as f:
 		f.write(hostname)
 
-print ("Please specify the root password when prompted.")
+print ("Please specify the root password when prompted:")
 subprocess.run("passwd")
 if click.confirm("Would you like to enable microcode updates for this system?"):
 	if platform.processor().lower().find("intel"):
@@ -231,7 +229,7 @@ if click.confirm("Would you like to enable a console screen reader? This will di
 	elif menu.selected_item.index==1:
 		print ("Enabling fenrir")
 		print ("Installing dependencies")
-		run("pacman -Syu python-dbus-common python-wcwidth python-daemonize python-dbus python-evdev python-pyte python-pyudev python-pyenchant sox espeak aspell aspell-de aspell-en aspell-es aspell-fr aspell-nl aspell-ca aspell-cs aspell-el aspell-hu aspell-it aspell-pl aspell-pt aspell-ru aspell-sv aspell-uk --noconfirm")
+		run("pacman -Syu python-dbus-common python-wcwidth python-daemonize python-dbus python-evdev python-pyte python-pyudev python-pyenchant sox espeak-ng aspell aspell-de aspell-en aspell-es aspell-fr aspell-nl aspell-ca aspell-cs aspell-el aspell-hu aspell-it aspell-pl aspell-pt aspell-ru aspell-sv aspell-uk --noconfirm")
 		print ("InstallingFenrir")
 		run("pacman -U /fenrir-1.9.5-1-any.pkg.tar.xz --noconfirm")
 		os.remove("/fenrir-1.9.5-1-any.pkg.tar.xz")
@@ -257,4 +255,7 @@ else:
 	os.remove("/fenrir-1.9.5-1-any.pkg.tar.xz")
 	os.remove("/settings.conf")
 
+# Make sure the system is audible when it boots.
+run("amixer sset Master 100%")
+run("alsactl store")
 print ("Main installation complete!")
