@@ -1,0 +1,10 @@
+#!/bin/sh
+started_flag=/run/speech-is-running
+if [ -f $started_flag ]; then
+	exit 0
+fi
+pick-a-card
+touch $started_flag
+aplay /usr/share/audio/alert.wav
+systemctl start fenrirscreenreader
+

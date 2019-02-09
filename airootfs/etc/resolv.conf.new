@@ -1,0 +1,19 @@
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+nameserver 208.67.222.222
+nameserver 208.67.222.220
+nameserver 8.26.56.26
+nameserver 8.20.247.20
+nameserver 209.244.0.3
+nameserver 208.244.0.4
+nameserver 156.154.70.1
+nameserver 156.154.71.1
+nameserver 46.151.208.154
+nameserver 128.199.248.105
+nameserver 216.146.35.35
+nameserver 216.146.36.36
+nameserver 195.46.39.39
+nameserver 195.46.39.40
+nameserver 84.200.69.80
+nameserver 84.200.70.40
+
