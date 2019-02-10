@@ -1,7 +1,6 @@
 alsa-utils
 arch-install-scripts
 b43-fwcutter
-brltty
 btrfs-progs
 dhclient
 dialog
@@ -64,5 +63,4 @@ aspell-ru
 aspell-sv
 aspell-uk
 fenrir
-dhcpcd
 
