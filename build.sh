@@ -2,9 +2,9 @@
 
 set -e -u
 
-iso_name=TalkingArch
-iso_label="ARCH_$(date +%Y%m)"
-iso_version=$(date +%Y.%m.%d)
+iso_name=FreeOS
+iso_label="freeos_$(date +%Y%m%d%H%M%S%N)"
+iso_version=$(date +%Y%m%d.%H%M%S%N)
 install_dir=arch
 work_dir=work
 out_dir=out
