@@ -86,8 +86,11 @@ while True:
                 f.write(f"{count}: {tz}\n")
             f.flush()
             os.fsync(f.fileno())
-        os.close(FD)
-        subprocess.run(f"less -- {FNAME}")
+        try:
+            os.close(FD)
+        except OSError:
+            pass
+        subprocess.run(shlex.split(f"less -- {FNAME}"))
         while True:
             TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}")
             if TZID < 1 or TZID > len(TZS):
