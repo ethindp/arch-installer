@@ -8,7 +8,6 @@ import shutil
 import platform
 import tempfile
 
-
 # executes the given command, but does not display output.
 def run(command: str, rshell: bool=False):
 	proc=subprocess.run(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=rshell)
@@ -35,8 +34,8 @@ def execute(command: str, rshell: bool=False)->tuple:
 	else:
 		return (proc.stdout.decode(), proc.stderr.decode())
 
-print ("Installing modules that you may find useful")
-run("pip install console-menu click wifi netifaces")
+print ("Installing required python modules")
+run("pip install console-menu click netifaces")
 from consolemenu import *
 from consolemenu.items import *
 import click
@@ -44,45 +43,21 @@ import netifaces
 de_packages=[]
 dm=-1
 if click.confirm("Would you like to install a desktop environment?"):
-	menu=SelectionMenu(['Budgie', 'Cinnamon', 'Deepin', 'Enlightenment', 'GNOME Flashback', 'Gnome', 'KDE', 'KDE Plasma', 'Kodi', 'LXDE (GTK2)', 'LXDE (GTK3)', 'LXQT', 'Mate', 'Pantheon', 'Sugar', 'XFCE'], title="Select a desktop environment to install")
+	menu=SelectionMenu(['Gnome', 'LXDE (GTK2)', 'LXDE (GTK3)', Mate'], title="Select a desktop environment to install")
 	menu.show(False)
 	selection=menu.selected_item.index
-	if selection==0:
-		de_packages.append("budgie-desktop")
-	elif selection==1:
-		de_packages.append("cinnamon")
-	elif selection==2:
-		de_packages.extend(["deepin", "deepin-extra"])
-	elif selection==3:
-		de_packages.append("enlightenment")
-	elif selection==4:
-		de_packages.extend(["gnome-flashback", "gnome-applets", "sensors-applet", "gnome", "gnome-backgrounds", "gnome-control-center", "gnome-screensaver", "network-manager-applet", "orca"])
-	elif selection==5:
-		de_packages.extend(["gnome", "gnome-extra", "orca"])
-	elif selection==6:
-		de_packages.extend(["kde-applications", "kdeaccessibility", "kdeadmin", "kdebase", "kdebindings", "kdeedu", "kdegames", "kdegraphics", "kdemultimedia", "kdenetwork", "kdepim", "kdesdk", "kdeutils", "kdewebdev"])
-	elif selection==7:
-		de_packages.extend("plasma")
-	elif selection==8:
-		de_packages.extend(["kodi", "kodi-addons", "orca"])
-		dm=5
-	elif selection==9:
-		de_packages.extend(["lxde", "orca"])
-	elif selection==10:
-		de_packages.extend(["lxde-gtk3", "orca"])
-	elif selection==11:
-		de_packages.extend(["lxqt", "orca"])
-	elif selection==12:
-		de_packages.extend(["mate", "mate-extra", "orca"])
-	elif selection==13:
-		de_packages.extend(["pantheon"])
-	elif selection==14:
-		de_packages.extend(["sugar", "sugar-fructose"])
-	elif selection==15:
-		de_packages.extend(["xfce4", "xfce4-goodies"])
+	dm=menu.selected_item.index
 	de_packages.extend(["xorg", "xorg-apps", "xorg-drivers", "xorg-fonts"])
+	if selection==0:
+		de_packages.extend(["gnome", "gnome-extra", "orca"])
+	elif selection==1:
+		de_packages.extend(["lxde", "orca"])
+	elif selection==2:
+		de_packages.extend(["lxde-gtk3", "orca"])
+	elif selection==3:
+		de_packages.extend(["mate", "mate-extra", "orca"])
 	de_packages.sort()
-	print ("Installing selected environment")
+	print ("Installing selected desktop environment")
 	run(f"""pacman -Syu {" ".join(de_packages)} --noconfirm""")
 
 if click.confirm("Would you like to add any other packages to the system?"):
@@ -120,6 +95,7 @@ while True:
 				break
 	else:
 		break
+
 print ("Setting and generating locale")
 run("sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen")
 run("locale-gen")
@@ -127,7 +103,7 @@ with open("/etc/locale.conf", "w") as f:
 	f.write("LANG=en_US.UTF-8")
 
 if click.confirm("Would you like to set a system hostname?"):
-	hostname=input("Enter your hostname: ")
+	hostname=click.prompt("Enter your hostname")
 	with open("/etc/hostname", "w") as f:
 		f.write(hostname)
 
@@ -181,29 +157,22 @@ if click.confirm("Modify sudoers file for administrator accounts?"):
 	os.environ["EDITOR"]="nano"
 	subprocess.run(["visudo"])
 if len(de_packages)>0:
-	if click.confirm("Would you like to boot into a display manager/desktop environment? Do not say yes if you wish to use Kodi standalone."):
-		menu=SelectionMenu(["GDM", "LightDM", "LXDM", "SDDM", "XDM"], title="Select a display manager to install")
-		menu.show(False)
-		dm=menu.selected_item.index
-		if menu.selected_item.index==0:
-			run("pacman -Syu gdm --noconfirm")
+	if click.confirm("Would you like to boot into a display manager/desktop environment?")
+		if dm==0:
+			print ("Enabling GDM as display manager")
 			run("systemctl enable gdm")
-		elif menu.selected_item.index==1:
+		elif dm==1 or dm==2:
+			print ("Enabling LXDM as display manager")
+			run("systemctl enable lxdm")
+		elif dm==3:
+			print ("Enabling LightDM as display manager")
 			run("pacman -Syu lightdm --noconfirm")
 			run("systemctl enable lightdm")
-		elif menu.selected_item.index==2:
-			run("pacman -Syu lxdm --noconfirm")
-			run("systemctl enable lxdm")
-		elif menu.selected_item.index==3:
-			run("pacman -Syu sddm --noconfirm")
-			run("systemctl enable sddm")
-		elif menu.selected_item.index==4:
-			run("pacman -Syu xorg-xdm --noconfirm")
-			run("systemctl enable xdm")
 
 if click.confirm("Would you like to enable orca accessibility?"):
-	print ("Enabling Mate accessibility for all non-root users")
+	print ("Enabling orca accessibility for all non-root users")
 	run("pacman -Syu orca --noconfirm")
+	run("gsettings set org.gnome.desktop.interface toolkit-accessibility true")
 	for user in users:
 		run(f"runuser --user {user} -- gsettings set org.mate.interface accessibility true")
 	run(f"runuser --user {user} -- gsettings set org.gnome.desktop.a11y.applications screen-reader-enabled true")
@@ -215,7 +184,7 @@ if click.confirm("Would you like to enable AUR support?"):
 else:
 	os.remove("/yay-9.1.0-1-x86_64.pkg.tar.xz")
 
-if click.confirm("Would you like to enable a console screen reader? This will disable desktop environment support, but will leave your desktop environment as is."):
+if click.confirm("Would you like to enable a console screen reader? This will disable the currently enabled display manager."):
 	menu=SelectionMenu(["Speakup", "Fenrir"], title="Select a console screen reader to enable")
 	menu.show(False)
 	if menu.selected_item.index==0:
@@ -225,14 +194,10 @@ if click.confirm("Would you like to enable a console screen reader? This will di
 		print ("Disabling display manager")
 		if dm==0:
 			run("systemctl disable gdm")
-		elif dm==1:
-			run("systemctl disable lightdm")
-		elif dm==2:
+		elif dm==1 or dm==2:
 			run("systemctl disable lxdm")
 		elif dm==3:
-			run("systemctl disable sddm")
-		elif dm==4:
-			run("systemctl disable xdm")
+			run("systemctl disable lightdm")
 		print ("Enabling espeakup service")
 		run("systemctl enable espeakup")
 	elif menu.selected_item.index==1:
@@ -245,14 +210,10 @@ if click.confirm("Would you like to enable a console screen reader? This will di
 		print ("Disabling display manager")
 		if dm==0:
 			run("systemctl disable gdm")
-		elif dm==1:
-			run("systemctl disable lightdm")
-		elif dm==2:
+		elif dm==1 or dm==2:
 			run("systemctl disable lxdm")
 		elif dm==3:
-			run("systemctl disable sddm")
-		elif dm==4:
-			run("systemctl disable xdm")
+			run("systemctl disable lightdm")
 		print ("Copying ISO settings file")
 		os.remove("/etc/fenrirscreenreader/settings/settings.conf")
 		shutil.move("/settings.conf", "/etc/fenrirscreenreader/settings")
