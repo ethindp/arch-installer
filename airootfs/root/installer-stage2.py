@@ -147,7 +147,7 @@ print("Creating administrative user accounts")
 USERS = []
 while True:
     USERNAME = click.prompt("Username")
-    PROC = subprocess.run(f"useradd -m -g users -G power,storage,wheel -s /bin/bash {USERNAME}")
+    PROC = subprocess.run(shlex.split(f"useradd -m -g users -G power,storage,wheel -s /bin/bash {USERNAME}"))
     if PROC.returncode != 0:
         print("Error: invalid username specification; user was not added to system. Please try again.")
         continue
