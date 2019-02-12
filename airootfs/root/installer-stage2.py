@@ -82,7 +82,7 @@ while True:
         FD, FNAME = tempfile.mkstemp(text=True)
         with os.fdopen(FD, "w") as f:
             f.write("The following timezones are available:\n")
-            for count, tz in enumerate(TZS):
+            for count, tz in enumerate(TZS, start=1):
                 f.write(f"{count}: {tz}\n")
             f.flush()
             os.fsync(f.fileno())
@@ -93,7 +93,7 @@ while True:
         subprocess.run(shlex.split(f"less -- {FNAME}"))
         while True:
             TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}")
-            if TZID < 1 or TZID > len(TZS):
+            if int(TZID) < 1 or int(TZID) > len(TZS):
                 print("Error: invalid timezone number")
                 continue
             else:

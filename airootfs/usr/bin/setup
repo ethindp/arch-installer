@@ -4,6 +4,7 @@ import shlex
 import os
 import socket
 import sys
+import subprocess
 
 try:
     socket.gethostbyname("google.com")
@@ -22,4 +23,4 @@ with open("/root/installer-stage2.py", "wb") as f:
     f.write(installer_stage2)
 
 os.chdir("/root")
-subprocess.run(shlex.split("python", "installer.py"))
+subprocess.run(shlex.split("python installer.py"))
