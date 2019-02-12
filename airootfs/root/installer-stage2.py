@@ -82,8 +82,8 @@ while True:
         FD, FNAME = tempfile.mkstemp(text=True)
         with os.fdopen(FD, "w") as f:
             f.write("The following timezones are available:\n")
-            for count, tz in enumerate(TZS, start=1):
-                f.write(f"{count}: {tz}\n")
+            for count, tz in enumerate(TZS, start=0):
+                f.write(f"{count+1}: {tz}\n")
             f.flush()
             os.fsync(f.fileno())
         try:
