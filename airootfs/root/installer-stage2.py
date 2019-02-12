@@ -237,11 +237,12 @@ run("alsactl store")
 
 # as dhcpcd has become more prevalent, automatically enable it for all network interfaces
 print("Configuring network interfaces")
-if subprocess.run("pacman -Qsq dhcpcd", stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+if subprocess.run(shlex.split("pacman -Qsq dhcpcd"), stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
     run("pacman -Syu dhcpcd --noconfirm")
 for interface in netifaces.interfaces():
     if interface.lower() == "lo":
         continue
-    run(f"systemctl enable dhcpcd@{interface}")
+    if subprocess.run(shlex.split(f"systemctl enable dhcpcd@{interface}"), stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
+        continue
 
 print("Main installation complete!")
