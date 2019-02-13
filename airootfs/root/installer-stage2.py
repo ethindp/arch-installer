@@ -77,7 +77,7 @@ if click.confirm("Would you like to install a desktop environment?"):
 if click.confirm("Would you like to add any other packages to the system?"):
     print("Enter all packages separated by a space.")
     PACKAGES = click.prompt("Packages to add")
-    print(f"Installing {shlex.split(PACKAGES)} packages...")
+    print(f"""Installing {len(shlex.split(PACKAGES))} {"packages" if len(shlex.split(packages))>0 else "package"}""")
     run(f"pacman -Syu {PACKAGES} --noconfirm")
 
 print("Setting timezone to default")
@@ -108,10 +108,16 @@ while True:
                 print("Error: invalid timezone number")
                 continue
             else:
-                run(f"timedatectl set-timezone {TZS[TZID-1]}")
+                run(f"timedatectl set-timezone {TZS[int(TZID)-1]}")
                 break
     else:
         break
+
+if click.confirm("Would you like to enable network time protocol (NTP) support? This will allow automatic time updates."):
+    print ("Enabling NTP support")
+    run("pacman -Syu ntp")
+    run("systemctl enable ntpd")
+    run("ntpd -u ntp:ntp -g")
 
 print("Setting and generating locale")
 run("sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen")
