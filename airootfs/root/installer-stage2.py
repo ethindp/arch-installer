@@ -76,8 +76,8 @@ if click.confirm("Would you like to install a desktop environment?"):
 
 if click.confirm("Would you like to add any other packages to the system?"):
     print("Enter all packages separated by a space.")
-    PACKAGES = click.prompt("Packages to add")
-    print(f"""Installing {len(shlex.split(PACKAGES))} {"packages" if len(shlex.split(packages))>0 else "package"}""")
+    PACKAGES = input("Packages to add: ")
+    print(f"""Installing {len(shlex.split(PACKAGES))} {"packages" if len(shlex.split(PACKAGES))>0 else "package"}""")
     run(f"pacman -Syu {PACKAGES} --noconfirm")
 
 print("Setting timezone to default")
