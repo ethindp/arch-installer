@@ -37,11 +37,22 @@ def execute(command: str, rshell: bool = False) -> tuple:
 
 
 print("Installing required python modules")
-run("pip install console-menu click netifaces")
+run("pip install console-menu click netifaces requests")
 from consolemenu import SelectionMenu
 import click
 import netifaces
+import requests
 
+
+print ("Determining closest 20 mirrors for installed system")
+LOC = requests.get("http://ipinfo.io/json").json()["country"]
+shutil.copy("/etc/pacman.d/mirrorlist", "/etc/pacman.d/mirrorlist.old")
+MIRRORLIST = execute(f"reflector -c {LOC} -p https -f 20 ")
+if MIRRORLIST[1]:
+    print(f"Warning: mirror list couldn't be refreshed; output was:\n{MIRRORLIST[1]}")
+else:
+    with open("/etc/pacman.d/mirrorlist", "w") as f:
+        f.write(MIRRORLIST[0])
 
 DE_PACKAGES = []
 DM = -1
