@@ -5,6 +5,7 @@ import shlex
 import shutil
 import platform
 import tempfile
+import textwrap
 
 
 # executes the given command, but does not display output.
@@ -80,6 +81,13 @@ if click.confirm("Would you like to add any other packages to the system?"):
     print(f"""Installing {len(shlex.split(PACKAGES))} {"packages" if len(shlex.split(PACKAGES))>0 else "package"}""")
     run(f"pacman -Syu {PACKAGES} --noconfirm")
 
+if subprocess.run(shlex.split("systemd-detect-virt --quiet")).returncode==0:
+    if click.confirm("\n".join(textwrap.wrap("It appears you are running in a virtualized environment. Therefore, security-related services and functions may not yield cryptographicly safe output, or may be extrordinarily slow. Would you like to remity this problem now?"))):
+        print ("Installing rng-tools to remity entropy generation problems")
+        run("pacman -Syu rng-tools --noconfirm")
+        run("systemctl enable rngd")
+        run("rngd")
+
 print("Setting timezone to default")
 if os.path.exists("/etc/localtime"):
     os.remove("/etc/localtime")
@@ -115,7 +123,7 @@ while True:
 
 if click.confirm("Would you like to enable network time protocol (NTP) support? This will allow automatic time updates."):
     print ("Enabling NTP support")
-    run("pacman -Syu ntp")
+    run("pacman -Syu ntp --noconfirm")
     run("systemctl enable ntpd")
     run("ntpd -u ntp:ntp -g")
 
