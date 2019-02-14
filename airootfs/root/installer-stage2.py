@@ -86,7 +86,7 @@ if subprocess.run(shlex.split("systemd-detect-virt --quiet")).returncode==0:
         print ("Installing rng-tools to remity entropy generation problems")
         run("pacman -Syu rng-tools --noconfirm")
         run("systemctl enable rngd")
-        run("rngd")
+
 
 print("Setting timezone to default")
 if os.path.exists("/etc/localtime"):
