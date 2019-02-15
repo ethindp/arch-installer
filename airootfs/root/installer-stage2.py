@@ -96,12 +96,13 @@ while True:
             pass
         subprocess.run(shlex.split(f"less -- {FNAME}"))
         while True:
-            TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}")
-            if int(TZID) < 1 or int(TZID) > len(TZS):
+            TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}", type=int)
+            if TZID < 1 or TZID > len(TZS):
                 print("Error: invalid timezone number")
                 continue
             else:
-                run(f"timedatectl set-timezone {TZS[TZID-1]}")
+                TZ = TZS[TZID-1]
+                run(f"timedatectl set-timezone {TZ}")
                 break
     else:
         break
