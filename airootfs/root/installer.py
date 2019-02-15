@@ -1,3 +1,8 @@
+"""Arch installer.
+
+Installs the Arch Linux operating system.
+This script takes input from the user in the form of prompts and menus which
+it then uses to install the operating system, the GRUB bootloader is used."""
 import sys
 import os
 import subprocess
@@ -5,9 +10,9 @@ import socket
 import shlex
 import json
 import shutil
-from consolemenu import SelectionMenu
 import requests
 import click
+from consolemenu import SelectionMenu
 
 
 # executes the given command, but does not display output.
@@ -100,21 +105,21 @@ if click.confirm("Would you like to select an alternative root filesystem? This 
     MENU = SelectionMenu(["BTRFS", "F2FS", "ext3", "ext4", "JFS", "NILFS2", "ReiserFS", "XFS"], title="Select a root filesystem")
     MENU.show(False)
     print("Creating root filesystem")
-    if MENU.selected_item.index==0:
+    if MENU.selected_item.index == 0:
         run(f"mkfs.btrfs -f {DISK}2")
-    elif MENU.selected_item.index==1:
+    elif MENU.selected_item.index == 1:
         run(f"mkfs.f2fs -f {DISK}2")
-    elif MENU.selected_item.index==2:
+    elif MENU.selected_item.index == 2:
         run(f"mkfs.ext3 {DISK}2")
-    elif MENU.selected_item.index==3:
+    elif MENU.selected_item.index == 3:
         run(f"mkfs.ext4 {DISK}2")
-    elif MENU.selected_item.index==4:
+    elif MENU.selected_item.index == 4:
         run(f"mkfs.jfs -q {DISK}2")
-    elif MENU.selected_item.index==5:
+    elif MENU.selected_item.index == 5:
         run(f"mkfs.nilfs2 -f {DISK}2")
-    elif MENU.selected_item.index==6:
+    elif MENU.selected_item.index == 6:
         run(f"mkfs.reiserfs -q {DISK}2")
-    elif MENU.selected_item.index==7:
+    elif MENU.selected_item.index == 7:
         run(f"mkfs.xfs -f {DISK}2")
 else:
     print("Creating root filesystem")
@@ -128,9 +133,9 @@ run("mount /dev/sda1 /mnt/boot")
 
 print("Installing the base system")
 if is_efi():
-    run("pacstrap /mnt base base-devel alsa-utils grub efibootmgr python python-pip wireless_tools wpa_supplicant dialog wpa_actiond")
+    run("pacstrap /mnt base base-devel alsa-utils grub efibootmgr python python-pip wireless_tools wpa_supplicant dialog wpa_actiond net-tools")
 else:
-    run("pacstrap /mnt base base-devel alsa-utils grub python python-pip wpa_supplicant wpa_actiond dialog wireless_tools")
+    run("pacstrap /mnt base base-devel alsa-utils grub python python-pip wpa_supplicant wpa_actiond dialog wireless_tools net-tools")
 
 print("Generating fstab")
 run("genfstab -U /mnt >> /mnt/etc/fstab")

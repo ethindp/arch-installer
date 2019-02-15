@@ -1,3 +1,7 @@
+"""Arch installer stage 2.
+
+This is the second stage of the installer, both parts are needed; however,
+the first stage will load this stage at the appropriate time."""
 import sys
 import os
 import subprocess
