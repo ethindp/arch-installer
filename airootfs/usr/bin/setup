@@ -1,6 +1,19 @@
 #!/usr/bin/python
 """Initial setup script.
+Copyright (C) 2019 The FreeOS project and its developers and contributors
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Run this to begin process.
 Script updates installer then runs it.
 
@@ -10,10 +23,12 @@ Warning! Developer files are for testing and are not considered stable, use at o
 import os
 import sys
 import subprocess
-import requests
 import shlex
 import socket
 import shutil
+import requests
+
+
 os.remove("/etc/resolv.conf")
 shutil.copy2("/etc/resolv.conf.new", "/etc/resolv.conf")
 try:
@@ -24,21 +39,22 @@ except socket.gaierror:
 
 if len(sys.argv) == 1:
     print("Please wait, downloading latest installer")
-    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
-    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
+    INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
+    INSTALLER_STAGE2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
 elif len(sys.argv) > 1 and sys.argv[1] == "-d":
     print("Fetching developer installer version.")
-    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
-    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
+    INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
+    INSTALLER_STAGE2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
 else:
     print("Improper argument: Only accepts -d or no argument at all.")
+    sys.exit(1)
 
 with open("/root/installer.py", "wb") as f:
-    f.write(installer_stage1)
+    f.write(INSTALLER_STAGE1)
 
 
 with open("/root/installer-stage2.py", "wb") as f:
-    f.write(installer_stage2)
+    f.write(INSTALLER_STAGE2)
 
 os.chdir("/root")
 subprocess.run(shlex.split("python installer.py"))
