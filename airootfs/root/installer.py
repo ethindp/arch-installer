@@ -48,8 +48,6 @@ def is_efi() -> bool:
     return os.path.exists("/sys/firmware/efi") or os.path.exists("/sys/firmware/efi/efivars") or os.path.exists("/sys/firmware/efi/vars")
 
 
-os.remove("/etc/resolv.conf")
-shutil.copy2("/etc/resolv.conf.new", "/etc/resolv.conf")
 # First let's make sure we can be heard.
 run("amixer sset Master 100%")
 # Step 1 - determine that we are connected to the internet

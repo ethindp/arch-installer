@@ -13,6 +13,9 @@ import subprocess
 import requests
 import shlex
 import socket
+import shutil
+os.remove("/etc/resolv.conf")
+shutil.copy2("/etc/resolv.conf.new", "/etc/resolv.conf")
 try:
     socket.gethostbyname("google.com")
 except socket.gaierror:
