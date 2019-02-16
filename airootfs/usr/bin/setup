@@ -22,11 +22,11 @@ except socket.gaierror:
     print("You are not connected to the internet. Please connect to the internet first to continue.")
     sys.exit(1)
 
-if not sys.argv:
+if len(sys.argv) == 1:
     print("Please wait, downloading latest installer")
     installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
     installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
-elif sys.argv and sys.argv[1] == "-d":
+elif len(sys.argv) > 1 and sys.argv[1] == "-d":
     print("Fetching developer installer version.")
     installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
     installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
