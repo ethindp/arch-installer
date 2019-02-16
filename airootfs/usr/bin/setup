@@ -1,20 +1,35 @@
 #!/usr/bin/python
-import requests
-import shlex
+"""Initial setup script.
+
+Run this to begin process.
+Script updates installer then runs it.
+
+Run with -d to fetch developer files.
+
+Warning! Developer files are for testing and are not considered stable, use at own risk."""
 import os
-import socket
 import sys
 import subprocess
-
+import requests
+import shlex
+import socket
 try:
     socket.gethostbyname("google.com")
 except socket.gaierror:
     print("You are not connected to the internet. Please connect to the internet first to continue.")
     sys.exit(1)
 
-print("Please wait, downloading latest installer")
-installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
-installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
+if not sys.argv:
+    print("Please wait, downloading latest installer")
+    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
+    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
+elif sys.argv and sys.argv[1] == "-d":
+    print("Fetching developer installer version.")
+    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
+    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
+else:
+    print("Improper argument: Only accepts -d or no argument at all.")
+
 with open("/root/installer.py", "wb") as f:
     f.write(installer_stage1)
 
