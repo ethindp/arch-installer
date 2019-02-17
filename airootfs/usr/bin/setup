@@ -10,10 +10,11 @@ Warning! Developer files are for testing and are not considered stable, use at o
 import os
 import sys
 import subprocess
-import requests
 import shlex
 import socket
 import shutil
+import requests
+
 os.remove("/etc/resolv.conf")
 shutil.copy2("/etc/resolv.conf.new", "/etc/resolv.conf")
 try:
@@ -24,28 +25,28 @@ except socket.gaierror:
 
 if len(sys.argv) == 1:
     print("Please wait, downloading latest installer")
-    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
-    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
+    INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
+    INSTALLER_STAGE2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer-stage2.py").content
 elif len(sys.argv) > 1 and sys.argv[1] == "-d":
     print("Fetching developer installer version.")
-    installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
-    installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
+    INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
+    INSTALLER_STAGE2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
 elif len(sys.argv) > 1 and sys.argv[1] == "-p":
-    print ("Downloading pi installer")
+    print("Downloading pi installer")
     INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/pi_installer.py").content
-    pi=True
+    PI = True
 else:
     print("Improper argument: Only accepts -d or no argument at all.")
 
 with open("/root/installer.py", "wb") as f:
-    f.write(installer_stage1)
+    f.write(INSTALLER_STAGE1)
 
-if not pi:
+if not PI:
     with open("/root/installer-stage2.py", "wb") as f:
-        f.write(installer_stage2)
+        f.write(INSTALLER_STAGE2)
 
 os.chdir("/root")
-if not pi:
+if not PI:
     subprocess.run(shlex.split("python installer.py"))
 else:
     subprocess.run(shlex.split("python pi_installer.py"))
