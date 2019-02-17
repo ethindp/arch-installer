@@ -92,6 +92,9 @@ if os.path.exists("/etc/localtime"):
     os.remove("/etc/localtime")
 run("ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime")
 run("hwclock --systohc")
+print ("Starting timedated and timesyncd services")
+run("systemctl start systemd-timedated")
+run("systemctl start systemd-timesyncd")
 while True:
     print("These are the settings for your current time/date configuration:")
     print(execute("timedatectl status")[0])
@@ -264,4 +267,5 @@ for interface in netifaces.interfaces():
     if subprocess.run(shlex.split(f"systemctl enable dhcpcd@{interface}"), stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
         continue
 
+run("systemctl enable systemd-timedated")
 print("Main installation complete!")
