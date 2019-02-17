@@ -104,7 +104,7 @@ with open("ArchLinuxARM-rpi-latest.tar.gz.md5", "wb") as f:
 run("sync")
 print("Verifying package integrity")
 PROC = subprocess.run(shlex.split("md5sum --quiet --status -c ArchLinuxARM-rpi-latest.tar.gz.md5"))
-if (PROC.returncode!=0:
+if PROC.returncode != 0:
     if not click.confirm("The integrity of this package is questionable and its checksum does not match the checksum on the arch linux arm website. Are you sure you want to flash this image?"):
         print("Aborting.")
         sys.exit(1)
