@@ -30,15 +30,22 @@ elif len(sys.argv) > 1 and sys.argv[1] == "-d":
     print("Fetching developer installer version.")
     installer_stage1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer.py").content
     installer_stage2 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/installer-stage2.py").content
+elif len(sys.argv) > 1 and sys.argv[1] == "-p":
+    print ("Downloading pi installer")
+    INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/dev/airootfs/root/pi_installer.py").content
+    pi=True
 else:
     print("Improper argument: Only accepts -d or no argument at all.")
 
 with open("/root/installer.py", "wb") as f:
     f.write(installer_stage1)
 
-
-with open("/root/installer-stage2.py", "wb") as f:
-    f.write(installer_stage2)
+if not pi:
+    with open("/root/installer-stage2.py", "wb") as f:
+        f.write(installer_stage2)
 
 os.chdir("/root")
-subprocess.run(shlex.split("python installer.py"))
+if not pi:
+    subprocess.run(shlex.split("python installer.py"))
+else:
+    subprocess.run(shlex.split("python pi_installer.py"))
