@@ -94,7 +94,7 @@ run("ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime")
 run("hwclock --systohc")
 while True:
     print("These are the settings for your current time/date configuration:")
-    print(execute("timedatectl")[0])
+    print(execute("timedatectl status")[0])
     if click.confirm("Would you like to change them?"):
         TZS = execute("timedatectl list-timezones")[0].split()
         FD, FNAME = tempfile.mkstemp(text=True)
