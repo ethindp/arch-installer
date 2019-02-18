@@ -163,8 +163,8 @@ if DE_PACKAGES:
 
 if click.confirm("Would you like to enable orca accessibility?"):
     print("Enabling orca accessibility for all non-root users")
-    run("pacman -Syu orca --noconfirm")
-    run("gsettings set org.gnome.desktop.interface toolkit-accessibility true")
+    run("pacman -Syu orca pulseaudio --noconfirm")
+    run("sed -i 's/autospawn = no/autospawn = yes/' /etc/pulse/client.conf")
     for user in USERS:
         run(f"runuser --user {user} -- gsettings set org.mate.interface accessibility true")
         run(f"runuser --user {user} -- gsettings set org.gnome.desktop.a11y.applications screen-reader-enabled true")
