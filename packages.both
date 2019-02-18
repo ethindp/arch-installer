@@ -70,4 +70,15 @@ jfsutils
 nilfs-utils 
 reiserfsprogs 
 xfsprogs 
-r8168
+8188eu-dkms
+8192cu-dkms
+8192eu-dkms
+r8101-dkms
+r8152-dkms
+r8168-dkms
+r8169aspm-dkms
+rtl8187se
+rtl8812au_8821au_linux-dkms-git
+rtl8812au-inject-dkms-git
+rtl88x2bu-dkms-git
+rtlwifi_new-extended-dkms
