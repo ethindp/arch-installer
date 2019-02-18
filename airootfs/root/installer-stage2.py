@@ -87,42 +87,6 @@ if click.confirm("Would you like to add any other packages to the system?"):
     print(f"Installing {shlex.split(PACKAGES)} packages...")
     run(f"pacman -Syu {PACKAGES} --noconfirm")
 
-print("Setting timezone to default")
-if os.path.exists("/etc/localtime"):
-    os.remove("/etc/localtime")
-run("ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime")
-run("hwclock --systohc")
-print ("Starting timedated and timesyncd services")
-run("systemctl start systemd-timedated")
-run("systemctl start systemd-timesyncd")
-while True:
-    print("These are the settings for your current time/date configuration:")
-    print(execute("timedatectl status")[0])
-    if click.confirm("Would you like to change them?"):
-        TZS = execute("timedatectl list-timezones")[0].split()
-        FD, FNAME = tempfile.mkstemp(text=True)
-        with os.fdopen(FD, "w") as f:
-            f.write("The following timezones are available:\n")
-            for count, tz in enumerate(TZS, start=0):
-                f.write(f"{count+1}: {tz}\n")
-            f.flush()
-            os.fsync(f.fileno())
-        try:
-            os.close(FD)
-        except OSError:
-            pass
-        subprocess.run(shlex.split(f"less -- {FNAME}"))
-        while True:
-            TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}", type=int)
-            if TZID < 1 or TZID > len(TZS):
-                print("Error: invalid timezone number")
-                continue
-            else:
-                TZ = TZS[TZID-1]
-                run(f"timedatectl set-timezone {TZ}")
-                break
-    else:
-        break
 
 print("Setting and generating locale")
 run("sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen")
