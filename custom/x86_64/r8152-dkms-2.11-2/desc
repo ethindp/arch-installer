@@ -1,0 +1,53 @@
+%FILENAME%
+r8152-dkms-2.11-2-x86_64.pkg.tar.xz
+
+%NAME%
+r8152-dkms
+
+%BASE%
+r8152-dkms
+
+%VERSION%
+2.11-2
+
+%DESC%
+A kernel module for Realtek RTL8152/RTL8153 Based USB Ethernet Adapters
+
+%CSIZE%
+52372
+
+%ISIZE%
+388096
+
+%MD5SUM%
+5af7e56ae59dfffa0d80aa7f64b5ca8f
+
+%SHA256SUM%
+0aa03b6254734b01c58ec70dd358ed76d64eb59d18afed78ccf10d0a5ed95b32
+
+%URL%
+http://www.realtek.com.tw
+
+%LICENSE%
+GPL
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1556310739
+
+%PACKAGER%
+Unknown Packager
+
+%CONFLICTS%
+r8152
+
+%DEPENDS%
+glibc
+dkms
+
+%OPTDEPENDS%
+linux-headers: Build the module for Arch kernel
+linux-lts-headers: Build the module for LTS Arch kernel
+
