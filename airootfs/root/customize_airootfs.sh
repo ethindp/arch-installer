@@ -20,3 +20,4 @@ pip install wifi console-menu requests click pyttsx3 pexpect
 echo "aplay /usr/share/audio/alert.wav" >> .bashrc
 systemctl enable fenrirscreenreader
 systemctl enable dhcpcd
+systemctl enable NetworkManager

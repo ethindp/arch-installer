@@ -81,4 +81,7 @@ rtl8812au-inject-dkms-git
 rtl88x2bu-dkms-git
 rtlwifi_new-extended-dkms
 networkmanager
-
+modemanager
+mobile-broadband-provider-info
+usb_modeswitch 
+rp-pppoe
