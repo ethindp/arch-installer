@@ -1,18 +1,4 @@
 """Arch installer stage 2.
-Copyright (C) 2019 The FreeOS project and its developers and contributors
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 This is the second stage of the installer, both parts are needed; however,
 the first stage will load this stage at the appropriate time."""
@@ -87,6 +73,39 @@ if click.confirm("Would you like to add any other packages to the system?"):
     print(f"Installing {shlex.split(PACKAGES)} packages...")
     run(f"pacman -Syu {PACKAGES} --noconfirm")
 
+print("Setting timezone to default")
+if os.path.exists("/etc/localtime"):
+    os.remove("/etc/localtime")
+run("ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime")
+run("hwclock --systohc")
+while True:
+    print("These are the settings for your current time/date configuration:")
+    print(execute("timedatectl")[0])
+    if click.confirm("Would you like to change them?"):
+        TZS = execute("timedatectl list-timezones")[0].split()
+        FD, FNAME = tempfile.mkstemp(text=True)
+        with os.fdopen(FD, "w") as f:
+            f.write("The following timezones are available:\n")
+            for count, tz in enumerate(TZS, start=0):
+                f.write(f"{count+1}: {tz}\n")
+            f.flush()
+            os.fsync(f.fileno())
+        try:
+            os.close(FD)
+        except OSError:
+            pass
+        subprocess.run(shlex.split(f"less -- {FNAME}"))
+        while True:
+            TZID = click.prompt(f"Enter timezone number (1-{len(TZS)}", type=int)
+            if TZID < 1 or TZID > len(TZS):
+                print("Error: invalid timezone number")
+                continue
+            else:
+                TZ = TZS[TZID-1]
+                run(f"timedatectl set-timezone {TZ}")
+                break
+    else:
+        break
 
 print("Setting and generating locale")
 run("sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen")
@@ -163,15 +182,15 @@ if DE_PACKAGES:
 
 if click.confirm("Would you like to enable orca accessibility?"):
     print("Enabling orca accessibility for all non-root users")
-    run("pacman -Syu orca pulseaudio --noconfirm")
-    run("sed -i 's/autospawn = no/autospawn = yes/' /etc/pulse/client.conf")
+    run("pacman -Syu orca --noconfirm")
+    run("gsettings set org.gnome.desktop.interface toolkit-accessibility true")
     for user in USERS:
         run(f"runuser --user {user} -- gsettings set org.mate.interface accessibility true")
         run(f"runuser --user {user} -- gsettings set org.gnome.desktop.a11y.applications screen-reader-enabled true")
 
 if click.confirm("Would you like to enable AUR support?"):
     print("Enabling AUR support with Yay")
-    run("pacman -U /yay-9.1.0-1-x86_64.pkg.tar.xz --noconfirm")
+    run("pacman -U /yay-9.2.0-1-x86_64.pkg.tar.xz --noconfirm")
     os.remove("/yay-9.1.0-1-x86_64.pkg.tar.xz")
 else:
     os.remove("/yay-9.1.0-1-x86_64.pkg.tar.xz")
@@ -197,7 +216,7 @@ if click.confirm("Would you like to enable a console screen reader? This will di
         print("Installing dependencies")
         run("pacman -Syu python-dbus-common python-wcwidth python-daemonize python-dbus python-evdev python-pyte python-pyudev python-pyenchant sox espeak-ng aspell aspell-de aspell-en aspell-es aspell-fr aspell-nl aspell-ca aspell-cs aspell-el aspell-hu aspell-it aspell-pl aspell-pt aspell-ru aspell-sv aspell-uk --noconfirm")
         print("InstallingFenrir")
-        run("pacman -U /fenrir-1.9.5-1-any.pkg.tar.xz --noconfirm")
+        run("pacman -U /fenrir-1.9.6-1-any.pkg.tar.xz --noconfirm")
         os.remove("/fenrir-1.9.5-1-any.pkg.tar.xz")
         print("Disabling display manager")
         if DM == 0:
@@ -231,5 +250,4 @@ for interface in netifaces.interfaces():
     if subprocess.run(shlex.split(f"systemctl enable dhcpcd@{interface}"), stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode != 0:
         continue
 
-run("systemctl enable systemd-timedated")
 print("Main installation complete!")

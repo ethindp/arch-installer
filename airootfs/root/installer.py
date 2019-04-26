@@ -1,18 +1,4 @@
 """Arch installer.
-Copyright (C) 2019 The FreeOS project and its developers and contributors
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Installs the Arch Linux operating system.
 This script takes input from the user in the form of prompts and menus which
@@ -153,8 +139,8 @@ print("Generating fstab")
 run("genfstab -U /mnt >> /mnt/etc/fstab")
 
 shutil.copy("installer-stage2.py", "/mnt")
-shutil.copy("yay-9.1.0-1-x86_64.pkg.tar.xz", "/mnt")
-shutil.copy("fenrir-1.9.5-1-any.pkg.tar.xz", "/mnt")
+shutil.copy("yay-9.2.0-1-x86_64.pkg.tar.xz", "/mnt")
+shutil.copy("fenrir-1.9.6-1-any.pkg.tar.xz", "/mnt")
 shutil.copy("/etc/fenrirscreenreader/settings/settings.conf", "/mnt")
 subprocess.run(shlex.split(f"arch-chroot /mnt /usr/bin/python /installer-stage2.py {DISK}"))
 os.remove("/mnt/installer-stage2.py")

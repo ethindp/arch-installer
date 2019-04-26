@@ -1,0 +1,54 @@
+%FILENAME%
+r8168-dkms-8.047.01-1-x86_64.pkg.tar.xz
+
+%NAME%
+r8168-dkms
+
+%BASE%
+r8168-dkms
+
+%VERSION%
+8.047.01-1
+
+%DESC%
+A kernel module for Realtek 8168 network cards
+
+%CSIZE%
+97856
+
+%ISIZE%
+1333248
+
+%MD5SUM%
+b398b93bbb7d097215c0759f9d1f67fd
+
+%SHA256SUM%
+6b92414178fc240c2f98a76ffe6dbbf2f34784a94030fcd966b485013faf2231
+
+%URL%
+http://www.realtek.com.tw
+
+%LICENSE%
+GPL
+
+%ARCH%
+x86_64
+
+%BUILDDATE%
+1556310742
+
+%PACKAGER%
+Unknown Packager
+
+%CONFLICTS%
+r8168
+
+%DEPENDS%
+glibc
+dkms
+
+%OPTDEPENDS%
+linux-headers: Needed for build the module for Arch kernel
+linux-lts-headers: Needed for build the module for LTS Arch kernel
+linux-zen-headers: Needed for build the module for ZEN Arch kernel
+

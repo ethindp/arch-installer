@@ -1,0 +1,69 @@
+%FILENAME%
+fenrir-1.9.6-1-any.pkg.tar.xz
+
+%NAME%
+fenrir
+
+%BASE%
+fenrir
+
+%VERSION%
+1.9.6-1
+
+%DESC%
+A user space console screen reader written in python3
+
+%CSIZE%
+1480056
+
+%ISIZE%
+3563520
+
+%MD5SUM%
+45b1fe509e6f38db52188c387eb6536d
+
+%SHA256SUM%
+93d8cdcd31164e8affc732320c893b0ecbae7f4f0b777cef52a5869cbb0c600c
+
+%URL%
+https://linux-a11y.org/index.php?page=fenrir-screenreader
+
+%LICENSE%
+LGPL
+
+%ARCH%
+any
+
+%BUILDDATE%
+1556310717
+
+%PACKAGER%
+Unknown Packager
+
+%CONFLICTS%
+fenrir
+
+%PROVIDES%
+fenrir
+
+%DEPENDS%
+python
+python-pyudev
+python-daemonize
+python-evdev
+python-dbus
+python-pyte
+
+%OPTDEPENDS%
+brltty: For Braille support
+gstreamer: for soundicons via gstreamer
+socat: Control running Fenrir screenreader
+sox: The default sound driver
+python-espeak: TTS support
+python-pyenchant: for spell check functionality
+xclip: for copy to X session clipboard
+speech-dispatcher: TTS support
+
+%MAKEDEPENDS%
+python-setuptools
+
