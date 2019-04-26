@@ -190,7 +190,7 @@ if click.confirm("Would you like to enable orca accessibility?"):
 
 if click.confirm("Would you like to enable AUR support?"):
     print("Enabling AUR support with Yay")
-    run("pacman -U /yay-9.1.0-1-x86_64.pkg.tar.xz --noconfirm")
+    run("pacman -U /yay-9.2.0-1-x86_64.pkg.tar.xz --noconfirm")
     os.remove("/yay-9.1.0-1-x86_64.pkg.tar.xz")
 else:
     os.remove("/yay-9.1.0-1-x86_64.pkg.tar.xz")
@@ -216,7 +216,7 @@ if click.confirm("Would you like to enable a console screen reader? This will di
         print("Installing dependencies")
         run("pacman -Syu python-dbus-common python-wcwidth python-daemonize python-dbus python-evdev python-pyte python-pyudev python-pyenchant sox espeak-ng aspell aspell-de aspell-en aspell-es aspell-fr aspell-nl aspell-ca aspell-cs aspell-el aspell-hu aspell-it aspell-pl aspell-pt aspell-ru aspell-sv aspell-uk --noconfirm")
         print("InstallingFenrir")
-        run("pacman -U /fenrir-1.9.5-1-any.pkg.tar.xz --noconfirm")
+        run("pacman -U /fenrir-1.9.6-1-any.pkg.tar.xz --noconfirm")
         os.remove("/fenrir-1.9.5-1-any.pkg.tar.xz")
         print("Disabling display manager")
         if DM == 0:
