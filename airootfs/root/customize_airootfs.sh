@@ -16,7 +16,7 @@ sed -i 's/#\(HandleHibernateKey=\)hibernate/\1ignore/' /etc/systemd/logind.conf
 sed -i 's/#\(HandleLidSwitch=\)suspend/\1ignore/' /etc/systemd/logind.conf
 systemctl enable pacman-init.service choose-mirror.service livecd-alsa-unmuter.service
 systemctl set-default multi-user.target
-pip install wifi console-menu requests click pyttsx3 pexpect
-echo "aplay /usr/share/audio/alert.wav" >> .bashrc
+pip install console-menu requests click pyttsx3 pexpect
 systemctl enable fenrirscreenreader
 systemctl enable dhcpcd
+systemctl enable NetworkManager
