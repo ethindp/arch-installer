@@ -131,9 +131,9 @@ run("mount /dev/sda1 /mnt/boot")
 
 print("Installing the base system")
 if is_efi():
-    run("pacstrap /mnt base base-devel alsa-utils grub efibootmgr python python-pip wireless_tools wpa_supplicant dialog wpa_actiond net-tools")
+    run("pacstrap /mnt base base-devel alsa-utils grub efibootmgr python python-pip wireless_tools wpa_supplicant dialog net-tools")
 else:
-    run("pacstrap /mnt base base-devel alsa-utils grub python python-pip wpa_supplicant wpa_actiond dialog wireless_tools net-tools")
+    run("pacstrap /mnt base base-devel alsa-utils grub python python-pip wpa_supplicant dialog wireless_tools net-tools")
 
 print("Generating fstab")
 run("genfstab -U /mnt >> /mnt/etc/fstab")
