@@ -22,7 +22,7 @@ try:
 except socket.gaierror:
     print("You are not connected to the internet. Please connect to the internet first to continue.")
     sys.exit(1)
-
+PI = False
 if len(sys.argv) == 1:
     print("Please wait, downloading latest installer")
     INSTALLER_STAGE1 = requests.get("https://raw.githubusercontent.com/ethindp/arch-installer/master/airootfs/root/installer.py").content
